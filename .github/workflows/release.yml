@@ -1,0 +1,31 @@
+name: Release Firmware
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    container: zephyrprojectrtos/ci:latest
+    steps:
+      - name: Check out this repo
+        uses: actions/checkout@v3
+
+      - name: Initialize west workspace
+        run: |
+          west init -l .
+          west update
+          west zephyr-export
+
+      - name: Build firmware for nucleo_f767zi
+        run: west build -b nucleo_f767zi -d build .
+
+      - name: Create GitHub Release with firmware binaries
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            build/zephyr/zephyr.bin
+            build/zephyr/zephyr.hex
+            build/zephyr/zephyr.elf

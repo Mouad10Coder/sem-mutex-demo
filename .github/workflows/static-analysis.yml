@@ -1,0 +1,16 @@
+name: Static Analysis
+
+on: [push, pull_request]
+
+jobs:
+  cppcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out this repo
+        uses: actions/checkout@v3
+
+      - name: Install cppcheck
+        run: sudo apt update && sudo apt install -y cppcheck
+
+      - name: Run static analysis
+        run: cppcheck --enable=warning,style,performance --error-exitcode=1 src/
